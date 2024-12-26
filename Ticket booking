@@ -1,0 +1,140 @@
+nt
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_MOVIES 10
+#define MAX_BOOKINGS 50
+
+// Structure to store movie information
+typedef struct {
+    char name[50];
+    int price;
+    int available_tickets;
+} Movie;
+
+// Structure to store booking information
+typedef struct {
+    char name[50];
+    char movie_name[50];
+    int tickets_booked;
+} Booking;
+
+// Function to add a new movie
+void addMovie(Movie movies[], int *movieCount) {
+    printf("Enter movie name: ");
+    scanf("%s", movies[*movieCount].name);
+    printf("Enter movie price: ");
+    scanf("%d", &movies[*movieCount].price);
+    printf("Enter available tickets: ");
+    scanf("%d", &movies[*movieCount].available_tickets);
+    (*movieCount)++;
+}
+
+// Function to display movie information
+void displayMovies(Movie movies[], int movieCount) {
+    int i;
+    for (i = 0; i < movieCount; i++) {
+        printf("Movie Name: %s\n", movies[i].name);
+        printf("Movie Price: %d\n", movies[i].price);
+        printf("Available Tickets: %d\n\n", movies[i].available_tickets);
+    }
+}
+
+// Function to book tickets
+void bookTickets(Movie movies[], int movieCount, Booking bookings[], int *bookingCount) {
+    char movieName[50];
+    int i, tickets;
+    printf("Enter movie name: ");
+    scanf("%s", movieName);
+    for (i = 0; i < movieCount; i++) {
+        if (strcmp(movies[i].name, movieName) == 0) {
+            printf("Enter number of tickets to book: ");
+            scanf("%d", &tickets);
+            if (tickets <= movies[i].available_tickets) {
+                movies[i].available_tickets -= tickets;
+                strcpy(bookings[*bookingCount].name, movieName);
+                bookings[*bookingCount].tickets_booked = tickets;
+                (*bookingCount)++;
+                printf("Tickets booked successfully!\n");
+            } else {
+                printf("Sorry, not enough tickets available!\n");
+            }
+            return;
+        }
+    }
+    printf("Movie not found!\n");
+}
+
+// Function to display booking information
+void displayBookings(Booking bookings[], int bookingCount) {
+    int i;
+    for (i = 0; i < bookingCount; i++) {
+        printf("Movie Name: %s\n", bookings[i].name);
+        printf("Tickets Booked: %d\n\n", bookings[i].tickets_booked);
+    }
+}
+
+// Function to cancel booking
+void cancelBooking(Movie movies[], int movieCount, Booking bookings[], int *bookingCount) {
+    char movieName[50];
+    int i;
+    printf("Enter movie name: ");
+    scanf("%s", movieName);
+    for (i = 0; i < *bookingCount; i++) {
+        if (strcmp(bookings[i].name, movieName) == 0) {
+            movies[i].available_tickets += bookings[i].tickets_booked;
+            // Shift bookings to the left
+            for (; i < *bookingCount - 1; i++) {
+                bookings[i] = bookings[i + 1];
+            }
+            (*bookingCount)--;
+            printf("Booking cancelled successfully!\n");
+            return;
+        }
+    }
+    printf("Booking not found!\n");
+}
+
+int main() {
+    Movie movies[MAX_MOVIES];
+    Booking bookings[MAX_BOOKINGS];
+    int movieCount = 0, bookingCount = 0;
+    int choice;
+
+    while (1) {
+        printf("Movie Ticket Management System\n");
+        printf("1. Add Movie\n");
+        printf("2. Display Movies\n");
+        printf("3. Book Tickets\n");
+        printf("4. Display Bookings\n");
+        printf("5. Cancel Booking\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addMovie(movies, &movieCount);
+                break;
+            case 2:
+                displayMovies(movies, movieCount);
+                break;
+            case 3:
+                bookTickets(movies, movieCount, bookings, &bookingCount);
+                break;
+            case 4:
+                displayBookings(bookings, bookingCount);
+                break;
+            case 5:
+                cancelBooking(movies, movieCount, bookings, &bookingCount);
+                break;
+            case 6:
+                printf("Exiting...\n");
+                return 0;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    }
+
+    return 0;
+}
